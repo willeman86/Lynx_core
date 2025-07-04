@@ -1,0 +1,17 @@
+{
+  "name": "Lynx Agent",
+  "version": "1.0",
+  "slug": "lynx_agent",
+  "description": "Project LYNX control bridge",
+  "startup": "application",
+  "boot": "auto",
+  "options": {},
+  "schema": {},
+  "host_network": true,
+  "privileged": [],
+  "arch": ["amd64", "aarch64", "armv7"],
+  "map": ["config:rw"],
+  "environment": {
+    "LYNX_TOKEN": "!secret lynx_token"
+  }
+}
