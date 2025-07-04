@@ -2,16 +2,13 @@
   "name": "Lynx Agent",
   "version": "1.0",
   "slug": "lynx_agent",
-  "description": "Project LYNX control bridge",
+  "description": "Project LYNX control bridge.",
   "startup": "application",
   "boot": "auto",
+  "hassio_api": true,
+  "homeassistant_api": true,
+  "host_network": true,
   "options": {},
   "schema": {},
-  "host_network": true,
-  "privileged": [],
-  "arch": ["amd64", "aarch64", "armv7"],
-  "map": ["config:rw"],
-  "environment": {
-    "LYNX_TOKEN": "!secret lynx_token"
-  }
+  "image": "ghcr.io/willeman86/lynx_agent"
 }
