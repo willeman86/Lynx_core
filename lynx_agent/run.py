@@ -1,38 +1,50 @@
-import requests
-import time
 import json
+import requests
+import os
+import time
 
-# Load token from secrets.json
-try:
-    with open("secrets.json") as f:
-        secrets = json.load(f)
-        TOKEN = secrets.get("token")
-except Exception as e:
-    print(f"❌ Error loading secrets.json: {e}")
-    TOKEN = None
+CONFIG_PATH = "/config/lynx_agent/secrets.json"
+API_URL = "http://supervisor/core/api/states"
 
-BASE_URL = "http://homeassistant.local:8123"  # Use your IP if needed, like http://192.168.4.144:8123
+def load_token():
+    try:
+        with open(CONFIG_PATH, "r") as f:
+            secrets = json.load(f)
+            return secrets.get("token")
+    except Exception as e:
+        print(f"[ERROR] Failed to load token: {e}")
+        return None
 
-HEADERS = {
-    "Authorization": f"Bearer {TOKEN}",
-    "Content-Type": "application/json"
-}
-
-def test_connection():
-    if not TOKEN:
-        print("❌ No token loaded.")
-        return
+def test_connection(token):
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+    }
 
     try:
-        response = requests.get(f"{BASE_URL}/api/", headers=HEADERS)
+        response = requests.get(API_URL, headers=headers)
         if response.status_code == 200:
-            print("✅ Successfully connected to Home Assistant API")
+            print("[OK] Connected to Home Assistant API")
+            return True
         else:
-            print(f"❌ Failed. Status code: {response.status_code}, Response: {response.text}")
+            print(f"[FAIL] API Error {response.status_code}: {response.text}")
+            return False
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"[ERROR] Connection failed: {e}")
+        return False
 
 if __name__ == "__main__":
+    print("[INFO] Starting Lynx Agent bridge test...")
+    
+    token = load_token()
+    if not token:
+        print("[ERROR] No token found.")
+        exit(1)
+
     while True:
-        test_connection()
+        if test_connection(token):
+            print("[INFO] Success. Agent is connected.")
+        else:
+            print("[WARN] Failed to connect. Retrying in 30 seconds...")
+        
         time.sleep(30)
